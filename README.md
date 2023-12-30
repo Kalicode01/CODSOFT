@@ -1,1 +1,1 @@
-python project for internship
+Python project for internship
