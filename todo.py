@@ -1,79 +1,55 @@
-from os.path import exists
-file_exists = exists("To do list.txt")
-if file_exists == False:
-    open("To do list.txt", "x")
+import tkinter as tk
+from tkinter import messagebox
 
-user_choice = -1
+# Function to add a new task to the list
+def add_task():
+    task = entry.get()
+    if task:
+        listbox.insert(tk.END, task)
+        entry.delete(0, tk.END)
+    else:
+        messagebox.showwarning("Warning", "Task field cannot be empty!")
 
-list = {}
-
-def show_list():
-    for task in list:
-            print(task.rstrip())
-
-def task_add():
-    task = input("Type the task: ")
-    list.append(task)
-    print("Task added")
-
-def task_delete():
-    option_number = 1
-
-    print("[-1]back <---")
-
-    for task in list:
-        print("[" + str(option_number) + "]" + task.rstrip())
-        option_number = option_number + 1
-
-    task_del = int(input("Select the option to delete, enter the number: "))
-    task_del -= 1
-    if task_del == -1:
-        list.pop(task_del)
-        print("Task deleted")
-
-def save_list():
-    file = open("To do list.txt", "w")
-    for task in list:
-        file.write(task + "\n")
-    file.close()
-
-def load_list():
-    file = open("To do list.txt")
-    for line in file.readlines():
-        list.append(line)
-
-    file.close()
-
-load_list()
-
-while user_choice != 5:
-
+# Function to delete a selected task from the list
+def delete_task():
     try:
+        selected_task_index = listbox.curselection()[0]
+        listbox.delete(selected_task_index)
+    except IndexError:
+        messagebox.showwarning("Warning", "No task selected!")
 
-        if user_choice == 1:
-            show_list()
+# Create the main window
+root = tk.Tk()
+root.title("To-Do List")
+root.configure(bg='#CF9CFC')  # Light Brown Background
 
-        if user_choice == 2:
-            task_add()
+# Function to change cursor style
+def change_cursor(event):
+    root.config(cursor="plus")
 
-        if user_choice == 3:
-            task_delete()
+# Entry for new tasks
+entry = tk.Entry(root, width=50, font=("Century", 16), bd=3, relief=tk.GROOVE, justify=tk.CENTER)
+entry.pack(padx=20, pady=(20, 10), ipady=10)  # Increased internal padding (ipady)
 
-        if user_choice == 4:
-            save_list()
+# Frame for buttons
+button_frame = tk.Frame(root, bg='#CF9CFC')  # Light Brown Background
+button_frame.pack(pady=10)
 
+# Buttons to add and delete tasks
+add_button = tk.Button(button_frame, text="Add Task", command=add_task, bg='#FFFFFF', font=("Forte", 12),
+                       bd=2, relief=tk.GROOVE, cursor="hand2")  # Hand-shaped cursor
+add_button.pack(side=tk.LEFT, padx=10, ipadx=10)  # Increased internal padding (ipadx)
+delete_button = tk.Button(button_frame, text="Delete Task", command=delete_task, bg='#FFFFFF', font=("Forte", 12),
+                          bd=2, relief=tk.GROOVE, cursor="hand2")  # Hand-shaped cursor
+delete_button.pack(side=tk.LEFT, padx=10, ipadx=10)  # Increased internal padding (ipadx)
 
-        print("1. Show 'To do list'")
-        print("2. Add task")
-        print("3. Delete task")
-        print("4. Save")
-        print("5. Close")
-        user_choice = int(input("Choose option: "))
+# Listbox to display tasks
+listbox = tk.Listbox(root, width=50, height=10, bg='#FFFFFF', font=("Century", 12), bd=3, relief=tk.GROOVE,
+                     selectbackground='#EF2A2A')  
+listbox.pack(padx=20, pady=(10, 20))
 
-        if user_choice > 5 or user_choice < 1:
-            print("There is no option with this number")
-            continue
+# Bind the change_cursor function to the entry field
+entry.bind("<Enter>", change_cursor)
 
-    except ValueError:
-        print("Type number, not letters!")
-        continue
+# Start the main loop
+root.mainloop()
